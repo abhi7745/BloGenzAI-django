@@ -131,9 +131,9 @@
     <div id="logreg-forms">
 
             <!-- Signup form ///////////////////-->
-            <form method="post" action="{% url 'signup' %}" class="form-signin">
+            <form method="post" action="{% url 'signup' %}" class="form-signin" onsubmit="button_disabler()">
                 {% csrf_token %}
-                <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
+                <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign up</h1>
                 <div class="social-login">
                     <button class="btn facebook-btn social-btn" type="button"><span><i class="fab fa-facebook-f"></i> Sign in with Facebook</span> </button>
                     <button class="btn google-btn social-btn" type="button"><span><i class="fab fa-google-plus-g"></i> Sign in with Google+</span> </button>
@@ -142,10 +142,11 @@
                 <p style="text-align:center;color: red;"> {{ error_msg }}  </p>
 
                 <input name="email" type="email" value="{{ static_mail }}" id="user-email" class="form-control" placeholder="Email address" required autofocus="">
-                <input name="pswd1" type="password" id="pswd1" class="form-control" placeholder="Password" >
-                <input name="pswd2" type="password" id="pswd2" class="form-control" placeholder="Repeat Password" >
+                {% comment %} <input name="pswd1" type="password" id="pswd1" class="form-control" placeholder="Password" >
+                <input name="pswd2" type="password" id="pswd2" class="form-control" placeholder="Repeat Password" > {% endcomment %}
 
-                <button class="btn btn-primary btn-block" type="submit"><i class="fas fa-user-plus"></i> Sign Up</button>
+                <button class="btn btn-primary btn-block" type="submit" id="form_btn"><i class="fas fa-paper-plane"></i>&nbsp;&nbsp; Send OTP</button>
+                <br><br>
                 <!--id="cancel_signup" delete in anchor tag-->
                 <div style="display: flex;justify-content: space-between;">
                     <a href="/" ><i class="fas fa-angle-left"></i> Back</a>
@@ -158,6 +159,15 @@
             
             
     </div>
+
+
+    <!-- on form submit button disabler start -->
+    <script>
+        function button_disabler(){
+            document.getElementById("form_btn").setAttribute("disabled", true); 
+        }
+    </script>
+    <!-- on form submit button disabler end -->
   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

@@ -9,16 +9,23 @@ from accounts.models import User_Account
 
 from django.contrib.auth.models import User
 
+import random # it is for otp generating purpose
+
+# email sending purpose
+from django.template.loader import render_to_string # email html setup purpose
+from django.core.mail import EmailMessage # Email sending purpose
+from django.conf import settings 
+
 # Create your views here.
 
-
+# index
 def index(request):
     if request.user.is_authenticated: 
         print(request.user,'User already logged in')
         return render(request,'admin/dashboard.html')
     else:
         return render(request,'index.html')
-
+# signup
 def signup(request):
 
     # user already logged in section (case 1)
@@ -30,51 +37,152 @@ def signup(request):
         # Registration section (case 2)
         if request.method == 'POST':
             email = request.POST.get('email')
-            pswd1 = request.POST.get('pswd1')
-            pswd2 = request.POST.get('pswd2')
+            # pswd1 = request.POST.get('pswd1')
+            # pswd2 = request.POST.get('pswd2')
     
             # print(email)
             # print(pswd1)
             # print(pswd2)
 
-            if(email== '' or pswd1=='' or pswd2==''):
+            if(email== ''):
                 print('No value')
                 context={'static_mail':email,'error_msg':'Please enter valid info...'}
                 return render(request,'accounts/signup.html',context)
 
-            elif(len(pswd1)<6):
-                print('Password length too short.')
-                context={'static_mail':email,'error_msg':'Password length is too short. Require a minimum password length of 6–10 characters.'}
-                return render(request,'accounts/signup.html',context)
-
-            elif(not pswd1==pswd2):
-                print('Password Missmatch')
-                context={'static_mail':email,'error_msg':"Those passwords didn't match. Try again."}
-                return render(request,'accounts/signup.html',context)
-
+            # check email exist or not 
             elif User.objects.filter(username=email).exists():
-                print('User already exist View')
-                context={'static_mail':email,'error_msg':'Email already exist...'}
+                context={'static_mail':email,'error_msg':'Email already registered'}
                 return render(request,'accounts/signup.html',context)
 
             else:
-                User_db=User.objects.create_user(
-                        username=email,
-                        password=pswd1,
-                    )
-                # user_obj.set_password(password)
 
-                User_Account.objects.create(
-                    user_id=User_db,
-                    email=email,
-                )
+                username=email[:-(len('@gmail.com'))]
+                print(username,'username')
 
-                print('Sucessfully registered')
-                return render(request,'accounts/login.html',{'success_msg': 'Successfully registered, Please login','static_mail':email})
+                otp = str(random.randint(10000 , 99999))# random otp generator
+                print(otp)
+                # saving email, otp, verification string in session for verify and after save data to database using (verify function)
+                request.session['email'] = email
+                request.session['otp'] = otp
+                request.session['verification'] = 'verify' #verification is a checker session_key
+
+                # mail sending code area
+                mydict={'username':username,'otp':otp}
+                html_template = 'email_templates/registration_or_forgot_psd_sender.html'
+                html_message = render_to_string(html_template, context=mydict)
+                subject = 'Verification Code For Registration'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email]
+                message = EmailMessage(subject, html_message, email_from, recipient_list)
+                message.content_subtype = 'html'
+                message.send()
+                print('email send successfully')
+
+                print('verify mail')
+                return redirect('verify_registration_mail')
+
+            # elif(len(pswd1)<6):
+            #     print('Password length too short.')
+            #     context={'static_mail':email,'error_msg':'Password length is too short. Require a minimum password length of 6–10 characters.'}
+            #     return render(request,'accounts/signup.html',context)
+
+            # elif(not pswd1==pswd2):
+            #     print('Password Missmatch')
+            #     context={'static_mail':email,'error_msg':"Those passwords didn't match. Try again."}
+            #     return render(request,'accounts/signup.html',context)
+
+            # elif User.objects.filter(username=email).exists():
+            #     print('User already exist View')
+            #     context={'static_mail':email,'error_msg':'Email already exist...'}
+            #     return render(request,'accounts/signup.html',context)
+
+            # else:
+            #     User_db=User.objects.create_user(
+            #             username=email,
+            #             password=pswd1,
+            #         )
+            #     # user_obj.set_password(password)
+
+            #     User_Account.objects.create(
+            #         user_id=User_db,
+            #         email=email,
+            #     )
+
+                # print('Sucessfully registered')
+                # return render(request,'accounts/login.html',{'success_msg': 'Successfully registered, Please login','static_mail':email})
                     
         return render(request,'accounts/signup.html')
 
+# signup - sub view
+# verify_registration_mail - otp validator
+def verify_registration_mail(request):
+    email=request.session.get('email')
+    otp=request.session.get('otp')
+    verification=request.session.get('verification')
+    print(email)
+    print(otp)
+    print(verification)
 
+
+    if not request.session.get('verification') == 'verify':
+        return redirect('/')
+    else:
+        if request.method == 'POST':
+            form_otp = request.POST.get('otp')
+            print(otp)
+
+            if otp == form_otp:
+                print('verified')
+                request.session['verification'] = 'set_password' #verification is a checker session_key
+                return redirect('registration_password_setter')
+            else:
+                print('wrong verification code')
+                context = {'email':email,'msg':'Wrong verification code', 'form_otp': form_otp}
+                return render(request,'accounts/verify_registration_mail.html',context)
+
+    context={'email':email}
+    return render(request,'accounts/verify_registration_mail.html', context)
+
+
+# signup - sub view
+# registration_password_setter - saving email and password to database(last stage of registration)
+def registration_password_setter(request):
+    email=request.session.get('email')
+
+
+    if not request.session.get('verification') == 'set_password':
+        return redirect('/')
+    else:
+        if request.method == 'POST':
+            psd = request.POST.get('psd')
+            confirm_psd = request.POST.get('confirm_psd')
+            print(email)
+            print(psd)
+            print(confirm_psd)
+
+
+            if not psd == confirm_psd:
+                print('password not match')
+                context = {'msg':'Password does not match'}
+                return render(request,'accounts/registration_password_setter.html', context)
+
+            else:
+                user_db=User.objects.create(username=email)
+                user_db.set_password(psd)
+                user_db.save()
+
+                User_Account.objects.create(
+                    user_id=user_db,
+                    email=email,
+                )
+                # request.session['verification'] = False
+                request.session.flush() # deleting all registration session from database
+                print('User verified and created')
+                context = {'success_msg': 'Successfully registered, Please login','static_mail':email}
+                return render(request,'accounts/login.html',context)
+
+    context={}
+    return render(request,'accounts/registration_password_setter.html', context)
 
 
 def login_page(request):

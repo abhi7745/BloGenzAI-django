@@ -2,13 +2,18 @@
 
 contents :-
 
-    app -> accounts/views.py(index, signup, login, logout)
+    project directory ->
+            urls.py (index) 
+
+    app ->  accounts/views.py(index, signup, verify_registration_mail, registration_password_setter, login, logout)
             accounts/models.py(User_Account)
-            accounts/urls.py (login, signup, logout)
+            accounts/urls.py(signup, verify_registration_mail, registration_password_setter, login, logout)
+    
 
     static -> accounts/dashboard/assets/(css, js, etc..)
     
-    template -> accounts/(signup.html,login.html)
-                admin/(dashboard.html, sidebar.html)
-                /index.html
-                /base.html
+    templates -> templates/accounts/(signup.html,login.html)
+                 templates/admin/(dashboard.html, sidebar.html)
+                 templates/email_templates/registration_or_forgot_psd_sender.html
+                 templates/base.html
+                 templates/index.html

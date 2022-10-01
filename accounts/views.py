@@ -143,7 +143,6 @@ def verify_registration_mail(request):
     context={'email':email}
     return render(request,'accounts/verify_registration_mail.html', context)
 
-
 # signup - sub view
 # registration_password_setter - saving email and password to database(last stage of registration)
 def registration_password_setter(request):
@@ -183,7 +182,6 @@ def registration_password_setter(request):
 
     context={}
     return render(request,'accounts/registration_password_setter.html', context)
-
 
 def login_page(request):
     # user already logged in section (case 1)
@@ -226,7 +224,129 @@ def login_page(request):
 
         return render(request,'accounts/login.html')
 
-
 def logout_page(request):
     logout(request)
     return redirect('/')
+
+# Forgot Password logic
+def forgot_password(request):
+    if request.method=='POST':
+        email=request.POST.get('email')
+        print(email)
+
+        if User.objects.filter(username=email).exists():
+            print('email exist')
+
+            # username fetching
+            # User_db=User.objects.get(username=email)
+            # if User_db.extend_usermodel.role == 'recruiter':
+            #     username=User_db.recruiter.company_name
+            # else:
+            #     username=User_db.candidate.name
+            # print(username,'??????????????????????')
+            
+            # or
+
+            username=email[:-(len('@gmail.com'))]
+            print(username,'username')
+
+            otp = str(random.randint(10000 , 99999))# random otp generator
+            print(otp)
+            # saving email and otp in session for verify and after resetting password
+            request.session['email'] = email
+            request.session['otp'] = otp
+            request.session['verification'] = 'verify' #verification is a checker session_key(if a view(verify_otp,password_reset) is valid or not)
+            
+            # email sending area
+            mydict={'username':username,'otp':otp}
+            html_template = 'email_templates/registration_or_forgot_psd_sender.html'
+            html_message = render_to_string(html_template, context=mydict)
+            subject = 'Password Reset Verification Code'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [email]
+            message = EmailMessage(subject, html_message, email_from, recipient_list)
+            message.content_subtype = 'html'
+            message.send()
+            print('email send successfully')
+
+            return redirect('forgot_password_verify_otp')
+
+        else:
+            print('email does not exist')
+            context = {'static_mail':email, 'error_msg':"Email doesn't exist"}
+            return render(request,'accounts/forgot_password.html', context)
+
+    return render(request,'accounts/forgot_password.html')
+
+# Forgot Password - sub view
+def forgot_password_verify_otp(request):
+    email=request.session.get('email')
+    otp=request.session.get('otp')
+    verification=request.session.get('verification')
+    # print(request.session.get('email'),'session')
+    # print(request.session.get('otp'),'session')
+    # print(request.session.get('verification'),'session')
+
+    if not verification == 'verify':
+        return redirect('/')
+
+    else:
+        if request.method == 'POST':
+            form_otp = request.POST.get('otp')
+            print(otp)
+
+            if otp == form_otp:
+                print('verified')
+                request.session['verification'] = 'set_password' #verification is a checker session_key
+                return redirect('forgot_password_reset')
+            else:
+                print('wrong verification code')
+                context = {'email':email,'msg':'Wrong verification code', 'form_otp': form_otp}
+                return render(request,'accounts/forgot_password_verify_otp.html', context)
+
+    return render(request,'accounts/forgot_password_verify_otp.html', {'email':email})
+
+# Forgot Password - sub view
+def forgot_password_reset(request):
+    email=request.session.get('email')
+    verification=request.session.get('verification')
+
+    if not verification == 'set_password':
+        return redirect('/')
+
+    else:
+        if request.method == 'POST':
+            psd = request.POST.get('psd')
+            confirm_psd = request.POST.get('confirm_psd')
+            # print(psd)
+            # print(confirm_psd)
+
+            if(len(psd)<6):
+                print('Password length too short.')
+                context = {'msg':'Password must have at least 6 characters', 'psd':psd,'confirm_psd':confirm_psd}
+                return render(request,'accounts/forgot_password_reset.html', context)
+
+            elif not psd == confirm_psd:
+                print('Password must be same')
+                context = {'msg':'Password does not match', 'psd':psd,'confirm_psd':confirm_psd}
+                return render(request,'accounts/forgot_password_reset.html', context)       
+
+            else:
+                if User.objects.filter(username=email).exists():
+                    User_db=User.objects.get(username=email)
+                    # print(User_db.password)
+                    # print(User_db.username)
+
+                    User_db.set_password(psd)
+                    User_db.save()
+                    print('Password reset successfully')
+                    request.session.flush() # deleting all forgot_password_reset session from "database and browser"
+                    # return redirect('login')
+                    context = {'success_msg': 'Password changed Successfully, Please login','static_mail':email}
+                    return render(request,'accounts/login.html',context)
+
+                else:
+                    return redirect('/')
+        
+
+    return render(request,'accounts/forgot_password_reset.html',{})

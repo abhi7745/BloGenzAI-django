@@ -5,16 +5,20 @@ It provides several views that you can handle ( index, signup_through_email_veri
 
 ### Contents :-
 
+#### project directory
+- urls.py (index)
+
 #### app
-- accounts/views.py (index, signup, login, logout)
+- accounts/views.py (index, signup, verify_registration_mail, registration_password_setter, login_page, logout_page, forgot_password, forgot_password_verify_otp, forgot_password_reset)
 - accounts/models.py (User_Account)
 - accounts/urls.py (login, signup, logout)
+- accounts/urls.py (signup, verify_registration_mail, registration_password_setter, login_page, logout_page, forgot_password, forgot_password_verify_otp, forgot_password_reset)
 
 #### static
 - accounts/dashboard/assets/(css, js, etc..)
 
 #### templates
-- templates/accounts/(signup.html,login.html)
+- templates/accounts/(login.html, signup.html, verify_registration_mail.html, registration_password_setter.html, forgot_password.html, forgot_password_verify_otp.html, forgot_password_reset.html)
 - templates/admin/(dashboard.html, sidebar.html)
 - templates/email_templates/registration_or_forgot_psd_sender.html
 - templates/base.html
@@ -78,9 +82,17 @@ urlpatterns = [
 ```bash
 urlpatterns = [
     path('login/', login_page, name='login'),
+
+    # signup through email[OTP]
     path('signup/', signup, name='signup'),
     path('verify_registration_mail/', verify_registration_mail, name='verify_registration_mail'),
     path('registration_password_setter/', registration_password_setter, name='registration_password_setter'),
+
+    # forgot password through email[OTP]
+    path('forgot_password/', forgot_password, name='forgot_password'),
+    path('forgot_password_verify_otp/', forgot_password_verify_otp, name='forgot_password_verify_otp'),
+    path('forgot_password_reset/', forgot_password_reset, name='forgot_password_reset'),
+    
     path('logout/', logout_page, name='logout'),
 ]
 ```
@@ -120,4 +132,5 @@ EMAIL_HOST_PASSWORD = PASSWORD # Email password
 - http://127.0.0.1:8000/
 - http://127.0.0.1:8000/login
 - http://127.0.0.1:8000/signup
+- http://127.0.0.1:8000/forgot_password
 - http://127.0.0.1:8000/logout

@@ -146,7 +146,8 @@
                 <input name="pswd" type="password" id="pswd" class="form-control" placeholder="Password" required>
                 
                 <button class="btn btn-success btn-block" type="submit"><i class="fas fa-sign-in-alt"></i> Sign in</button>
-                <a href="#" id="forgot_pswd">Forgot password?</a>
+                {% comment %} <a href="#" id="forgot_pswd">Forgot password?</a> {% endcomment %}
+                <a href="{% url 'forgot_password' %}" >Forgot password?</a>
                 <hr>
                 <!-- <p>Don't have an account!</p>   id="btn-signup" //////////////////////-->
                 <a href="/accounts/signup/" style="color:white;" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Don't have an account? Sign up</a>

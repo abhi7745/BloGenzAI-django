@@ -23,4 +23,5 @@ urlpatterns = [
     path('', index, name='index'),
     # accounts app main urls
     path('accounts/', include('accounts.urls')),
+    path('user/', include('user.urls')),
 ]

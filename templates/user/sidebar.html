@@ -10,18 +10,18 @@
 
         {% comment %} {% if request.resolver_match.url_name == 'admin.dashboard' %} active {% endif %} {% endcomment %}
 
-        <li class="dropdown active">
-            <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
+        <li class="dropdown {% if request.resolver_match.url_name == 'user-dashboard' %} active {% endif %}">
+            <a href="{% url "user-dashboard" %}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
         </li>
 
 
 
-       <li class="dropdown">
+       <li class="dropdown {% if request.resolver_match.url_name == 'create-blog' or request.resolver_match.url_name == 'list-blog' or request.resolver_match.url_name == 'update-blog' %} active {% endif %}">
             <a href="#" class="menu-toggle nav-link has-dropdown"><i
                     data-feather="briefcase"></i><span>Create Blog</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="#">Add</a></li>
-                <li><a class="nav-link" href="#">Blogs</a></li>
+                <li class="{% if request.resolver_match.url_name == 'create-blog' %} active {% endif %}"><a class="nav-link" href="{% url "create-blog" %}">Add</a></li>
+                <li class="{% if request.resolver_match.url_name == 'list-blog' or request.resolver_match.url_name == 'update-blog' %} active {% endif %}"><a class="nav-link" href="{% url "list-blog" %}">Blogs</a></li>
             </ul>
         </li>
 

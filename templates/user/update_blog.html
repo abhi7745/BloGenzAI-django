@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}
+User Dashboard
+{% endblock %}
+
+{% block styles %}
+
+<!-- css and js for izitoast -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js" integrity="sha512-Zq9o+E00xhhR/7vJ49mxFNJ0KQw1E1TMWkPTxrWcnpfEFDEXgUiwJHIKit93EW/XxE31HSI5GEOW06G6BF1AtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Filepond stylesheet -->
+<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
+
+
+<!-- trix-editor cdn - style and javascript -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
+<script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+
+{% endblock %}
+
+{% block sidebar %}
+{% include 'user/sidebar.html' %}
+{% endblock %}
+
+
+{% block content %}
+
+<section class="section">
+    
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-6 col-lg-8">
+        
+        <form id="form" method="post" enctype="multipart/form-data">
+            <!-- {% csrf_token %} -->
+            <div class="card">
+              <div class="card-header" style="justify-content: space-between;">
+                <h4>Update Your Blog</h4> <a href="{% url "create-blog" %}" class="btn btn-primary">Add New</a>
+              </div>
+              <div class="card-body">
+
+                <div class="form-group">
+                    <label>Title <span style="color: red;font-size: 16px;">*</span></label>
+                    <input autofocus id="blog_title" name="blog_title" type="text" value="{{blog_data.title}}" class="form-control" required>
+                    
+                    <div class="invalid-feedback">
+                    Invalid Blog Title
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{request.get_host}}{{blog_data.thumbnail_img.url}} {{ request.META.HTTP_HOST }}
+                    <label>Thumbnail Image <span style="color: red;font-size: 16px;">*</span></label>
+                    <input id="thumbnail_img" name="thumbnail_img" type="file" value="" accept="image/*" class="filepond" required>
+
+                    
+                    <div class="invalid-feedback">
+                    Invalid File Format
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Blog Content <span style="color: red;font-size: 16px;">*</span></label>
+                    <input id="content" name="content" type="hidden" value="{{blog_data.content}}" class="form-control" required>
+                    <trix-editor input="content"></trix-editor>
+
+                    <div class="invalid-feedback">
+                    Invalid Blog Content
+                    </div>
+                </div>
+
+
+          
+              <div class="card-footer text-right">
+
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_model_form">Delete</button>
+                  
+                    {% comment %} <a href="" class="btn btn-danger">Delete</a> {% endcomment %}
+                    <button class="btn btn-primary" id="submitBtn">Update</button>
+                    <a href="{% url "list-blog" %}" class="btn btn-primary">Back</a>
+
+                    <!-- <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Back</a> -->
+              </div>
+        
+              
+            </div>
+          </div>
+
+        </form>
+
+        </div>
+
+    </div>   
+    
+    
+
+
+</section>
+
+
+<!-- Deleting model form start -->
+<div class="modal fade" id="delete_model_form" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalCenterTitle">Alert!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to delete the "{{blog_data.title}}" blog? This action cannot be undone, and all associated data will be permanently removed.
+        </div>
+        <div class="modal-footer bg-whitesmoke br">
+
+            <form action="{% url "delete-blog" blog_data.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </form>
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+<!-- Deleting model form end -->
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<style>
+    /* Hide the "Attach a file" button */
+    .trix-button-group--file-tools {
+      display: none !important;
+    }
+</style>
+
+<!-- FilePond image preview library -->
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+<!-- Filepond File type validation library -->
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+
+<!-- Load FilePond library -->
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+<!-- Turn all file input elements into ponds -->
+<script>
+
+   // Register the plugin area
+    FilePond.registerPlugin(
+        // 1. image preview library registering
+        FilePondPluginImagePreview,
+        // 2. File type validation library registering
+        FilePondPluginFileValidateType
+    );
+
+    var files = [];
+    const inputElement = document.querySelector('#thumbnail_img');
+    
+    function filepondcreator(){
+
+        // Turn input element into a pond with configuration options
+        // Initialize FilePond
+        const pond = FilePond.create(inputElement, {
+            labelIdle: `Drag &amp; Drop your images or <span class="filepond--label-action" tabindex="0">Browse</span><br>`,
+            acceptedFileTypes: ['image/*'],
+            onaddfile: (err, fileItem) => {
+                files.push(fileItem.file); // in this case only one image is passing to server files[0], otherwise use "for" or "forEach" 
+                console.log('added', files);
+            },
+            onremovefile: (err, fileItem) => {
+                // When user remove an image from filepond, then, clear the "files" list
+                const index = files.indexOf(fileItem.file); // Find the index of the file to remove
+                if (index > -1){
+                    files.splice(index, 1);
+                }
+                console.log('removed', files);
+            }
+            
+        });
+
+        {% comment %} pond.addFile('http://127.0.0.1:8000{{blog_data.thumbnail_img.url}}', { index: 0 }); {% endcomment %}
+
+
+        // Fetch the image URL from Django and add it to FilePond
+        fetch('http://127.0.0.1:8000{{blog_data.thumbnail_img.url}}')
+        .then(response => response.blob())
+        .then(blob => {
+            console.log('Fetched blob:', blob);
+            const file = new File([blob], '{{ blog_data.thumbnail_img.name }}', { type: 'image/jpeg' }); // Adjust the type based on the actual file type
+            console.log('Created file:', file);
+            pond.addFile(file);
+        })
+        .catch(error => {
+            console.error(error, '?????????????????????????????????????????????????????????????????????');
+        });
+
+       
+        
+
+        
+
+    }
+    filepondcreator();// calling the function for initial setup
+
+
+
+
+    
+    
+    
+    // ajax form submission area
+    var formData = new FormData();
+    $('#form').submit(function(e){
+        e.preventDefault();
+        
+        // normal input elements adding to formdata
+        formData.append('blog_title', $('#blog_title').val());
+        formData.append('content', $('#content').val());
+        formData.append('thumbnail_img', files[0]);
+        // for django csrf_token setup
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        // alert('form submitting');
+
+        $.ajax({
+
+            type: "POST",
+            url: '{% url "update-blog" request.resolver_match.kwargs.pk %}',
+            data:formData,
+            cache:false,
+            processData:false,
+            contentType:false,
+            enctype: 'multipart/form-data',
+
+
+            beforeSend: function(){
+                // alert('before send');
+                $("#submitBtn").attr("disabled",true); // disabling button
+                $("#submitBtn").addClass('btn-progress'); // addding a progress class
+            },
+
+            success: function(data){
+                if (data.status){
+                    // alert('successfully send data to django')
+                    console.log(data);
+                    console.log(files);
+
+                    
+                    iziToast.success({
+                        position: "topRight",
+                        timeout: 5000, icon: 'ico-success', 
+                        title: 'Blog',
+                        message: 'updated successfully'
+                    });
+
+                    $("#submitBtn").attr("disabled",false); // enabling button
+                    $("#submitBtn").removeClass('btn-progress'); // removing progress class
+
+                }
+            },
+
+            error: function() {
+                console.log(xhr.status + ':' + xhr.responseText );
+            }
+
+        })
+
+    });//document.on end
+
+    
+
+
+</script>
+
+{% endblock %}

@@ -18,13 +18,6 @@ from django.conf import settings
 
 # Create your views here.
 
-# index
-def index(request):
-    if request.user.is_authenticated: 
-        print(request.user,'User already logged in')
-        return render(request,'admin/dashboard.html')
-    else:
-        return render(request,'index.html')
 # signup
 def signup(request):
 

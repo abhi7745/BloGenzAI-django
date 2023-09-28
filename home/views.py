@@ -6,5 +6,5 @@ from user.models import Blog
 # home page
 def index(request):
     blog_data=Blog.objects.all().order_by('-id')
-    context = {'blog_data' : blog_data}
+    context = {'blog_data' : blog_data, 'latest_three_blog': blog_data[:3]}
     return render(request,'home/index.html', context)

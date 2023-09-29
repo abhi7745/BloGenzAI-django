@@ -6,6 +6,69 @@
 
 {% block content %}
 
+    <!-- Navbar & Carousel Start -->
+    <div class="container-fluid position-relative p-0">
+        
+        {% include "home/navigation_bar.html" %}
+
+        <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active"> 
+                    <img class="w-100" src="{% static "home/img/ai/ai_robot1.jpeg" %}" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 900px;">
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Minimal effort</h5>
+                            <h1 class="display-1 text-white mb-md-4 animated zoomIn">Innovative Blogging Solutions with a Creative Edge</h1>
+                            {% comment %} <a href="quote.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Free Quote</a> {% endcomment %}
+                            {% comment %} <a href="" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Contact Us</a> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="w-100" src="{% static "home/img/ai/ai_robot2.jpeg" %}" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 900px;">
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Smooth process</h5>
+                            <h1 class="display-1 text-white mb-md-4 animated zoomIn">Unleashing Creativity through Blogging Solutions</h1>
+                            {% comment %} <a href="quote.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Free Quote</a> {% endcomment %}
+                            {% comment %} <a href="" class="btn btn-outline-light py-md-3 px-md-5 animated slideInRight">Contact Us</a> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#header-carousel"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <!-- Navbar & Carousel End -->
+
+
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(9, 30, 62, .7);">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <div class="input-group" style="max-width: 600px;">
+                        <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                        <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+
     <!-- Blog Start -->
     <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
         <div class="container py-5">
@@ -19,7 +82,7 @@
                             <div class="col-md-6 wow slideInUp" data-wow-delay="0.1s">
                                 <div class="blog-item bg-light rounded overflow-hidden">
                                     <div class="blog-img position-relative overflow-hidden">
-                                        <img class="img-fluid" src="{% static "home/img/blog-1.jpg" %}" alt="">
+                                        <img class="img-fluid" src="{{blog.thumbnail_img.url}}" alt="image" style="width: 100%; height: 200px; object-fit: cover;">
                                         <a class="position-absolute top-0 start-0 bg-primary text-white rounded-end mt-5 py-2 px-4" href="">Web Design</a>
                                     </div>
                                     <div class="p-4">
@@ -28,7 +91,7 @@
                                             <small><i class="far fa-calendar-alt text-primary me-2"></i>{{blog.created_at}}</small>
                                         </div>
                                         <h4 class="mb-3">{{blog.title|title|truncatechars:23}}</h4>
-                                        <p>{{blog.content|safe|truncatechars_html:50}}</p>
+                                        <p>{{blog.content|safe|truncatechars_html:30}}</p>
                                         <a class="text-uppercase" href="">Read More <i class="bi bi-arrow-right"></i></a>
                                     </div>
                                 </div>
@@ -159,32 +222,32 @@
                 <div class="col-lg-4 wow zoomIn" data-wow-delay="0.1s">
                     <div class="bg-primary shadow d-flex align-items-center justify-content-center p-4" style="height: 150px;">
                         <div class="bg-white d-flex align-items-center justify-content-center rounded mb-2" style="width: 60px; height: 60px;">
-                            <i class="fa fa-users text-primary"></i>
+                            <i class="fa fa-user text-primary"></i>
                         </div>
                         <div class="ps-4">
-                            <h5 class="text-white mb-0">Happy Clients</h5>
-                            <h1 class="text-white mb-0" data-toggle="counter-up">12345</h1>
+                            <h5 class="text-white mb-0">Users</h5>
+                            <h1 class="text-white mb-0" data-toggle="counter-up">{{total_users}}</h1>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 wow zoomIn" data-wow-delay="0.3s">
                     <div class="bg-light shadow d-flex align-items-center justify-content-center p-4" style="height: 150px;">
                         <div class="bg-primary d-flex align-items-center justify-content-center rounded mb-2" style="width: 60px; height: 60px;">
-                            <i class="fa fa-check text-white"></i>
+                            <i class="fa fa-list text-white"></i>
                         </div>
                         <div class="ps-4">
-                            <h5 class="text-primary mb-0">Projects Done</h5>
-                            <h1 class="mb-0" data-toggle="counter-up">12345</h1>
+                            <h5 class="text-primary mb-0">Blogs</h5>
+                            <h1 class="mb-0" data-toggle="counter-up">{{total_blog_count}}</h1>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 wow zoomIn" data-wow-delay="0.6s">
                     <div class="bg-primary shadow d-flex align-items-center justify-content-center p-4" style="height: 150px;">
                         <div class="bg-white d-flex align-items-center justify-content-center rounded mb-2" style="width: 60px; height: 60px;">
-                            <i class="fa fa-award text-primary"></i>
+                            <i class="fa fa-users text-primary"></i>
                         </div>
                         <div class="ps-4">
-                            <h5 class="text-white mb-0">Win Awards</h5>
+                            <h5 class="text-white mb-0">Visiters</h5>
                             <h1 class="text-white mb-0" data-toggle="counter-up">12345</h1>
                         </div>
                     </div>

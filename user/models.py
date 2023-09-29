@@ -13,8 +13,8 @@ import random, string
 
 class Blog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    slug = models.SlugField(blank=True)
-    title = models.CharField(max_length=255)
+    slug = models.SlugField(blank=True, max_length=225)
+    title = models.CharField(max_length=1024)
     thumbnail_img = models.ImageField(upload_to='blog/thumbnail_img')
     content = models.TextField()
     ban = models.BooleanField(default=False)
@@ -31,11 +31,11 @@ class Blog(models.Model):
 
             # self.title = f"{self.title}-{random_string}"
             title = f"{self.title}-{random_string}"
-            self.slug = slugify(title)
+            self.slug = slugify(title)[:225]
             # print('database if call################################################################', self.pk, Blog.objects.filter(title=self.title).count(), args, kwargs)
 
         else:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title)[:225]
             # print('database else call################################################################', self.pk, Blog.objects.filter(title=self.title).count(), args, kwargs)
 
         super(Blog, self).save(*args, **kwargs)

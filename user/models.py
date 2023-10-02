@@ -11,8 +11,17 @@ from django.utils.text import slugify
 import random, string
 
 
+class Blog_category(models.Model):
+    name = models.CharField(max_length=225)
+
+
+    def __str__(self):
+        return self.name
+    
+
 class Blog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog_category = models.ForeignKey(Blog_category, on_delete=models.CASCADE, blank=True, null=True)
     slug = models.SlugField(blank=True, max_length=225)
     title = models.CharField(max_length=1024)
     thumbnail_img = models.ImageField(upload_to='blog/thumbnail_img')
@@ -43,6 +52,14 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.slug
+    
+
+class Blog_tag(models.Model):
+    blog_category = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    tag = models.CharField(max_length=225)
+
+    def __str__(self):
+        return self.tag
 
 
 class Like(models.Model):

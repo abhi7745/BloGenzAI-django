@@ -10,6 +10,8 @@ from PIL import Image # image_file_size checking purpose
 
 from django.contrib import messages
 
+import openai
+from Blog.config import openai_api_key
 # Create your views here.
 
 
@@ -43,6 +45,44 @@ def create_blog(request):
     return render(request, 'user/create_blog.html')
 
 
+# Function for creating blog using AI with user prompt 
+def Magic_writer(request):
+    if request.method == "POST":
+        prompt = request.POST.get('prompt', '')
+        paragraph_length = request.POST.get('paragraph_length', '')
+
+        print(prompt)
+        print(paragraph_length)
+
+        # result = response.choices[0].message.content.strip()
+        # print(result, "????????")
+        # return JsonResponse({'status': True}, safe=False)
+
+
+        if paragraph_length:
+            generative_prompt = f'{prompt}, in {paragraph_length} paragraph'
+        else:
+            generative_prompt = f'{prompt}'
+            
+
+        try:
+            openai.api_key = openai_api_key
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{'role':'user', 'content': generative_prompt}]
+            )
+            # filter the response content
+            # result = response
+            result = response.choices[0].message.content.strip()
+            print(result, "????????")
+
+            return JsonResponse({'status': True, 'msg_response': result}, safe=False)
+        
+        except ValueError:
+            print("except ValueError response - ?????????????????")
+            return JsonResponse({'status': False}, safe=False)
+            
+    
 
 def list_blog(request):
 

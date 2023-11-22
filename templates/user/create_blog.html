@@ -29,57 +29,60 @@ User Dashboard
 
         <div class="col-12 col-md-6 col-lg-8">
         
-        <form id="form" method="post" enctype="multipart/form-data">
-            <!-- {% csrf_token %} -->
-            <div class="card">
-              <div class="card-header">
-                <h4>Create Your Blog</h4>
-              </div>
-              <div class="card-body">
+            <form id="form" method="post" enctype="multipart/form-data">
+                <!-- {% csrf_token %} -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <h4>Create Your Blog</h4>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#magicwriter">
+                            Magic Writer
+                        </button>
+                    </div>
+                    <div class="card-body">
 
-                <div class="form-group">
-                    <label>Title <span style="color: red;font-size: 16px;">*</span></label>
-                    <input autofocus id="blog_title" name="blog_title" type="text" value="" class="form-control" required>
+                        <div class="form-group">
+                            <label>Title <span style="color: red;font-size: 16px;">*</span></label>
+                            <input autofocus id="blog_title" name="blog_title" type="text" value="" class="form-control" required>
+                            
+                            <div class="invalid-feedback">
+                            Invalid Blog Title
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Thumbnail Image <span style="color: red;font-size: 16px;">*</span></label>
+                            <input id="thumbnail_img" name="thumbnail_img" type="file" value="" accept="image/*" class="filepond" required>
+
+                            
+                            <div class="invalid-feedback">
+                            Invalid File Format 
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Blog Content <span style="color: red;font-size: 16px;">*</span></label>
+                            <input id="content" name="content" type="hidden" value="" class="form-control" required>
+                            <trix-editor input="content"></trix-editor>
+
+                            <div class="invalid-feedback">
+                            Invalid Blog Content
+                            </div>
+                        </div>
+
+
+                
+                        <div class="card-footer text-right">
+                            <a href="{% url "list-blog" %}" class="btn btn-primary">Show Blogs</a>
+                            <button class="btn btn-primary" id="submitBtn">Add New</button>
+                            <!-- <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Back</a> -->
+                        </div>
                     
-                    <div class="invalid-feedback">
-                    Invalid Blog Title
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Thumbnail Image <span style="color: red;font-size: 16px;">*</span></label>
-                    <input id="thumbnail_img" name="thumbnail_img" type="file" value="" accept="image/*" class="filepond" required>
-
                     
-                    <div class="invalid-feedback">
-                    Invalid File Format 
                     </div>
                 </div>
 
-
-                <div class="form-group">
-                    <label>Blog Content <span style="color: red;font-size: 16px;">*</span></label>
-                    <input id="content" name="content" type="hidden" value="" class="form-control" required>
-                    <trix-editor input="content"></trix-editor>
-
-                    <div class="invalid-feedback">
-                    Invalid Blog Content
-                    </div>
-                </div>
-
-
-          
-              <div class="card-footer text-right">
-                  <a href="{% url "list-blog" %}" class="btn btn-primary">Show Blogs</a>
-                  <button class="btn btn-primary" id="submitBtn">Add New</button>
-                  <!-- <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Back</a> -->
-              </div>
-        
-              
-            </div>
-          </div>
-
-        </form>
+            </form>
 
         </div>
 
@@ -89,6 +92,83 @@ User Dashboard
 
 
 </section>
+
+
+<!-- Magic write form start -->
+<div class="modal fade col-12 col-md-12 col-lg-12" id="magicwriter" tabindex="-1" role="dialog" aria-labelledby="formModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="formModal">Magic Blog Writer</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <form class="" id="magic_writer_form">
+                <div class="form-group">
+                    <label>Type your prompt <span style="color: red;font-size: 16px;">*</span></label>
+
+                    {% comment %} <div class="input-group">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        </div>
+                    </div> {% endcomment %}
+                    
+                    <textarea name="prompt" id="prompt" class="form-control" placeholder="Prompt" cols="30" rows="10" style="height:100px !important;" required>create a blog for the topic self thought developer</textarea>
+                    
+                </div>
+
+                <div class="form-group">
+                    <label>Select Your Paragraph length <span>(Optional)</span></label>
+                    <select class="form-control"  id="paragraph_length">
+                    <option  value="" selected disabled>Select</option>
+                    <option value="1" >1 Paragraph</option>
+                    <option value="2" >2 Paragraph</option>
+                    <option value="3" >3 Paragraph</option>
+                    <option value="4" >4 Paragraph</option>
+                    <option value="5" >5 Paragraph</option>
+                    <option value="10" >10 Paragraph</option>
+                    <option value="15" >15 Paragraph</option>
+                    <option value="20" >20 Paragraph</option>
+                    <option value="30" >30 Paragraph</option>
+                    <option value="50" >50 Paragraph</option>
+                    <option value="100" >100 Paragraph</option>
+                    <option value="150" >150 Paragraph</option>
+                    <option value="200" >200 Paragraph</option>
+                    <option value="250" >250 Paragraph</option>
+                    <option value="500" >500 Paragraph</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="display:none;" id="message_response_div">
+                    <label>Message Response<span style="color: red;font-size: 16px;"></span></label>
+                    <hr>
+                    <textarea id="message_response" name="message_response" type="text" class="form-control" cols="100" rows="100" style="height:200px !important;"></textarea>
+                </div>
+
+
+                {% comment %} <button type="button" class="btn btn-primary m-t-15 waves-effect">LOGIN</button> {% endcomment %}
+
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary" id="generarte_btn" >Generate</button>
+                    <div id="copy_btn_and_ai_add_btn_div" style="display: none;">
+                        <button type="button" class="btn btn-primary" id="copy_btn" >Copy</button>
+                        <button type="button" class="btn btn-primary" id="ai_add_btn" data-dismiss="modal">Add</button>
+                    </div>
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Magic write form end -->
+
 
 {% endblock %}
 
@@ -193,7 +273,7 @@ User Dashboard
     
     
     
-    // ajax form submission area
+    // ajax form submission area for saving blog form
     var formData = new FormData();
     $('#form').submit(function(e){
         e.preventDefault();
@@ -256,9 +336,138 @@ User Dashboard
 
     });//document.on end
 
-    
 
+    // ajax form submission for magic writer form
+    var formData_magic_writer = new FormData();
+    $('#magic_writer_form').submit(function(e){
+        e.preventDefault();
+
+        // Fetch the form data
+        //var formData = $(this).serialize();
+
+        // normal input elements adding to formData_magic_writer
+        formData_magic_writer.append('prompt', $('#prompt').val());
+        formData_magic_writer.append('paragraph_length', $('#paragraph_length').val());
+        formData_magic_writer.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        //alert('Form submitting');
+
+        $.ajax({
+
+            type: "POST",
+            url: '{% url "magic-writer" %}',
+            data:formData_magic_writer,
+            cache:false,
+            processData:false,
+            contentType:false,
+
+            beforeSend: function(){
+                // alert('before send');
+                $("#generarte_btn").attr("disabled",true); // disabling button
+                $("#generarte_btn").addClass('btn-progress'); // addding a progress class
+                $("#copy_btn_and_ai_add_btn_div").css("display", "none"); // adding display: none
+            },
+
+            success: function(data){
+                if (data.status){
+                    // alert('successfully send data to django')
+                    console.log("Magic writer", data);
+
+                    //$('#form')[0].reset(); // resetting all form elements, but filepond object will not affect form reset method
+                    
+                    //alert('Form submitted successfully');
+
+                    iziToast.success({
+                        position: "topRight",
+                        timeout: 5000, icon: 'ico-success', 
+                        title: 'Your prompt successfully excecuted',
+                        //message: 'successfully'
+                    });
+
+                    $("#generarte_btn").attr("disabled",false); // enabling button
+                    $("#generarte_btn").removeClass('btn-progress'); // removing progress class
+                    $("#generarte_btn").html('Regenerate');// changing the button text
+
+                    $("#copy_btn_and_ai_add_btn_div").css("display", "block"); // removing display: none
+
+                    // message respone set to textarea value
+                    $("#message_response_div").css("display", "block");
+                    $("#message_response").val(data.msg_response);
+                }
+                else{
+                    iziToast.warning({
+                        position: "topRight",
+                        timeout: 5000, icon: 'ico-warning', 
+                        title: 'Something went worng!',
+                        message: 'please try again later'
+                    });
+                }
+            },
+
+            error: function() {
+                console.log(xhr.status + ':' + xhr.responseText );
+            }
+
+
+        }); //ajax end
+
+
+
+
+    });// function end
+    
+    // copying function for api respone data start
+    $("#copy_btn").on("click", function(){
+        $("#copy_btn").removeClass("btn-primary");
+        $("#copy_btn").addClass("btn-success");
+        $("#copy_btn").html("Copied");
+
+        var copyText = document.getElementById("message_response"); // textarea content for copying purpose
+
+        // Select the "text" from textarea field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copied "text" is set in the clipbord 
+        // navigator.clipboard.writeText(copyText.value);
+        // or
+        document.execCommand("copy"); // Copied "text" is set in the clipbord 
+                
+
+        setTimeout(function() {
+            $("#copy_btn").addClass("btn-primary");
+            $("#copy_btn").removeClass("btn-success");
+            $("#copy_btn").html("Copy");
+        }, 5000);
+
+    });
+    // copying function for api respone data end
+
+
+    $("#ai_add_btn").on("click", function(){
+        
+        var message_response = $("#message_response").val(); // textarea content to insert into the main blog richtext area
+
+        // Getting the trix-editor object
+        var element = document.querySelector("trix-editor");
+        //var editor = element.editor;  // is a Trix.Editor instance
+        
+        element.editor.insertString(message_response) // inserting the message_response to trix-editor content
+        element.editor.insertLineBreak() // add a line break
+        element.editor.insertLineBreak() // add a line break
+        
+    });
 
 </script>
+
+<!-- ai_add_btn style for moblie devices start -->
+<style>
+    @media (max-width: 768px) {
+        #ai_add_btn {
+          margin-top: 10px;
+        }
+    }
+</style>
+<!-- ai_add_btn style for moblie devices end -->
 
 {% endblock %}
